@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Spring Boot Chat</title>
+    <!-- Les librairies STOMP w SockJS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+</head>
+<body>
+    <h2>Chat 1337 🚀</h2>
+    <input type="text" id="name" placeholder="Smiytek..." />
+    <input type="text" id="message" placeholder="Taper message..." />
+    <button onclick="sendMessage()">Envoyer</button>
+    
+    <ul id="chat-box"></ul>
+
+    <script>
+        var stompClient = null;
+
+        // Connexion m3a WebSocket mli t'tchargé la page
+        function connect() {
+            var socket = new SockJS('/sudoku-websocket'); // l'endpoint li drna f config
+            stompClient = Stomp.over(socket);
+            stompClient.connect({}, function (frame) {
+                console.log('Connected: ' + frame);
+                // Subscribe l "/topic/public" bach nchofo messages d nas akhrin
+                stompClient.subscribe('/topic/public', function (chatMessage) {
+                    showMessage(JSON.parse(chatMessage.body));
+                });
+            });
+        }
+
+        // Fonction bach nsifto message l backend
+        function sendMessage() {
+            var senderName = document.getElementById('name').value;
+            var messageContent = document.getElementById('message').value;
+            
+            stompClient.send("/app/sendMessage", {}, JSON.stringify({
+                'sender': senderName,
+                'content': messageContent
+            }));
+            document.getElementById('message').value = ''; // khwi input
+        }
+
+        // Affichage f liste
+        function showMessage(message) {
+            var chatBox = document.getElementById('chat-box');
+            var li = document.createElement('li');
+            li.appendChild(document.createTextNode(message.sender + ": " + message.content));
+            chatBox.appendChild(li);
+        }
+
+        window.onload = connect;
+    </script>
+</body>
+</html>

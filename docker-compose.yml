@@ -1,0 +1,21 @@
+
+services:
+  backend:
+    build: ./backend
+    container_name: backend
+    ports:
+      - "8080:8080"
+    networks:
+      - transcendence-net
+
+  # frontend:
+  #   build: ./frontend
+  #   container_name: frontend
+  #   ports:
+  #     - "3000:3000"
+  #   networks:
+  #     - transcendence-net
+
+networks:
+  transcendence-net:
+    driver: bridge
